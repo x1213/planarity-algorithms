@@ -10,6 +10,11 @@
 
 extern int __markRef;
 
+
+//-----------------------------------------------------------------------------------
+// Constructor, descructor.
+//-----------------------------------------------------------------------------------
+
 node::node(int i, node_type t) 
 {
 	_type = t;
@@ -33,6 +38,11 @@ node::~node()
 	if (_emb != 0) delete _emb;
 }
 
+
+//-----------------------------------------------------------------------------------
+// Misc...
+//-----------------------------------------------------------------------------------
+
 void node::init_c_node(node* head, node* node_t, boundary_cycle* b) 
 {
 	_parent = head;
@@ -50,6 +60,62 @@ bool node::is_finished()
 }
 
 void node::finish() {_is_done = true;}
+
+//自己連到post-order-index最高的node的post-order-index
+int node::maxBackEdgeID() {return _adjList[_adjList.size() - 1]->_post_order_index;}
+//類似上面, 但是範圍包括了自己往下的整個sub-tree所連到的node
+int node::maxBackAnscenstorID() {return _maxBackAnscenstorID;}
+
+
+
+void node::add_adj(node* u) {_adjList.push_back(u);}
+void node::set_parent(node* u) {_parent = u;}
+void node::setAdjList(vector<node*> &adjList) 
+{
+	_adjList = adjList;
+}
+int node::postOrderIndex() {
+	return _post_order_index;
+}
+int node::degree() {
+	return _adjList.size();
+}
+node* node::adj(int i) {
+	return _adjList[i];
+}
+bool node::is_root() {return _parent == 0;}
+void node::mark() {
+	_Mark = __markRef;
+}
+bool node::isMarked() {
+	return _Mark == __markRef;
+}
+
+node* node::parent() {return _parent;}
+bool node::is_visited(int i) {return _visited == i;}
+void node::visit(int i) {_visited = i;}
+
+
+
+list_node* node::get_list_node() {return _list_node;}
+void node::set_list_node(list_node* n) {_list_node = n;}
+boundary_cycle* node::get_RBC() {return _RBC;}
+
+
+embedding* node::get_embedding() 
+{ 
+	if (_emb == 0) _emb = new embedding(this);
+	return _emb;
+}
+
+
+//_list_node != 0 <-> 它在某c-node的RBC中
+bool node::is_in_c_node() {return _list_node != 0;}
+
+//-----------------------------------------------------------------------------------
+// 2-connected comp, dfs, pre-processing...
+//-----------------------------------------------------------------------------------
+
 void node::DFS_visit(vector<node*> &dfsList, int &index) 
 {
 	mark();
@@ -75,24 +141,7 @@ void node::setMaxBackAnscenstorID()
 	}
 }
 
-//自己連到post-order-index最高的node的post-order-index
-int node::maxBackEdgeID() {return _adjList[_adjList.size() - 1]->_post_order_index;}
-//類似上面, 但是範圍包括了自己往下的整個sub-tree所連到的node
-int node::maxBackAnscenstorID() {return _maxBackAnscenstorID;}
-bool node::is_articulation_point() 
-{
-	for (int i = 0; i < _descendantList.size(); ++i) {
-		if (_descendantList[i]->_maxBackAnscenstorID == _post_order_index) return true;
-	}
-	return false;
-}
-void node::reset_dfs_info() 
-{
-	_parent = 0;
-	_post_order_index = INT_MAX;
-	_maxBackAnscenstorID = INT_MAX;
-	_descendantList.clear();
-}
+
 //找到節點, 並將之分離.
 //設好各個分身在其連通部份對應的adj-list
 void node::split_arculation_point(vector<node*> &node_list, node* modified) 
@@ -151,29 +200,25 @@ void node::split_arculation_point(vector<node*> &node_list, node* modified)
 		if (!_descendantList[i]->isMarked()) _descendantList[i]->split_arculation_point(node_list, modified);
 	}
 }
-void node::add_adj(node* u) {_adjList.push_back(u);}
-void node::set_parent(node* u) {_parent = u;}
-void node::setAdjList(vector<node*> &adjList) 
-{
-	_adjList = adjList;
-}
-int node::postOrderIndex() {
-	return _post_order_index;
-}
-int node::degree() {
-	return _adjList.size();
-}
-node* node::adj(int i) {
-	return _adjList[i];
-}
-bool node::is_root() {return _parent == 0;}
-void node::mark() {
-	_Mark = __markRef;
-}
-bool node::isMarked() {
-	return _Mark == __markRef;
-}
 
+bool node::is_articulation_point() 
+{
+	for (int i = 0; i < _descendantList.size(); ++i) {
+		if (_descendantList[i]->_maxBackAnscenstorID == _post_order_index) return true;
+	}
+	return false;
+}
+void node::reset_dfs_info() 
+{
+	_parent = 0;
+	_post_order_index = INT_MAX;
+	_maxBackAnscenstorID = INT_MAX;
+	_descendantList.clear();
+}
+	
+//-----------------------------------------------------------------------------------
+// Descendant-list
+//-----------------------------------------------------------------------------------
 
 int node::num_curr_descendant() {return _curr_descendantList.size();}
 node* node::curr_descendant(int i) {return _curr_descendantList[i];}
@@ -203,10 +248,50 @@ void node::get_total_list(vector<node*> &list)
 	}		
 }
 
-node* node::parent() {return _parent;}
-bool node::is_visited(int i) {return _visited == i;}
-void node::visit(int i) {_visited = i;}
+//將u放到current-descendant-list中
+//若還沒被visit(i), 則先clear.
+void node::add_node(node* u, int index) 
+{
+	if (!is_visited(index)) _curr_descendantList.clear();
+	_curr_descendantList.push_back(u);
+}
 
+void node::clear_current_descendant() 
+{
+	_curr_descendantList.clear();
+}
+
+
+//terminal path上的p-node專用
+//next為"唯一"label > index的, 即是往下的另一個terminal node
+//i_tree為其他剩下label == index的node-list
+void node::get_curr_descendantList(vector<node*> &i_tree, int index, node* &next) 
+{
+	for (int i = 0; i < _curr_descendantList.size(); ++i) {
+		if (_curr_descendantList[i]->maxBackAnscenstorID() > index) next = _curr_descendantList[i];
+		else i_tree.push_back(_curr_descendantList[i]);
+	}
+}
+	
+//上面的變種, 只傳回list
+void node::get_curr_descendantList(vector<node*> &i_tree, int index) 
+{
+	for (int i = 0; i < _curr_descendantList.size(); ++i) {
+		if (_curr_descendantList[i]->maxBackAnscenstorID() == index) i_tree.push_back(_curr_descendantList[i]);
+	}
+}
+
+//將u加到remain-list中. (u必為c-node, 加到它的head的remain-list.)
+void node::add_to_remain_list(node* u) {_remain_descendantList.push_back(u);}
+//初始化, 將_curr_descendantList設成_descendantList
+void node::init_remain_list() 
+{
+	_remain_descendantList = _descendantList;
+}
+
+//-----------------------------------------------------------------------------------
+// Checks during constructing terminal path
+//-----------------------------------------------------------------------------------
 
 //僅適用於p-node
 //檢查是否只有最大label的child可以超過index, 且有被visited
@@ -270,48 +355,7 @@ pair<node*, node*> node::node_m_check(int index, bool &is_valid)
 	return return_pair;
 }
 
-//將u放到current-descendant-list中
-//若還沒被visit(i), 則先clear.
-void node::add_node(node* u, int index) 
-{
-	if (!is_visited(index)) _curr_descendantList.clear();
-	_curr_descendantList.push_back(u);
-}
 
-void node::clear_current_descendant() 
-{
-	_curr_descendantList.clear();
-}
-
-list_node* node::get_list_node() {return _list_node;}
-void node::set_list_node(list_node* n) {_list_node = n;}
-boundary_cycle* node::get_RBC() {return _RBC;}
-
-//terminal path上的p-node專用
-//next為"唯一"label > index的, 即是往下的另一個terminal node
-//i_tree為其他剩下label == index的node-list
-void node::get_curr_descendantList(vector<node*> &i_tree, int index, node* &next) 
-{
-	for (int i = 0; i < _curr_descendantList.size(); ++i) {
-		if (_curr_descendantList[i]->maxBackAnscenstorID() > index) next = _curr_descendantList[i];
-		else i_tree.push_back(_curr_descendantList[i]);
-	}
-}
-	
-//上面的變種, 只傳回list
-void node::get_curr_descendantList(vector<node*> &i_tree, int index) 
-{
-	for (int i = 0; i < _curr_descendantList.size(); ++i) {
-		if (_curr_descendantList[i]->maxBackAnscenstorID() == index) i_tree.push_back(_curr_descendantList[i]);
-	}
-}
-
-embedding* node::get_embedding() 
-{ 
-	if (_emb == 0) _emb = new embedding(this);
-	return _emb;
-}
-	
 //自己必須要被visited
 //測試他是否下接i-tree, 等同於remain-list中所有nodes都被visited, 且label == i.
 //此時curr-list == remain-list
@@ -343,7 +387,12 @@ bool node::is_i_tree(int index)
 	}
 	return _i_tree_test.second;
 }
-	
+
+
+//-----------------------------------------------------------------------------------
+// Post-processing
+//-----------------------------------------------------------------------------------
+
 //加回至原本embedding list
 void node::add_to_final_embedding(vector<int> &emb_list) 
 {
@@ -363,16 +412,12 @@ void node::add_to_final_embedding(vector<int> &emb_list)
 		prev = temp;
 	}
 }
-//將u加到remain-list中. (u必為c-node, 加到它的head的remain-list.)
-void node::add_to_remain_list(node* u) {_remain_descendantList.push_back(u);}
-//初始化, 將_curr_descendantList設成_descendantList
-void node::init_remain_list() 
-{
-	_remain_descendantList = _descendantList;
-}
 
-//_list_node != 0 <-> 它在某c-node的RBC中
-bool node::is_in_c_node() {return _list_node != 0;}
+
+
+//-----------------------------------------------------------------------------------
+// Debug
+//-----------------------------------------------------------------------------------
 
 void node::output_embedding(bool is_flip) 
 {

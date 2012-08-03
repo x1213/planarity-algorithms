@@ -1,5 +1,6 @@
 //-----------------------------------------------------------------------------------
 // Implementation of a planarity testing algorithm via PC-tree.
+// The header of boundar_cycle.cpp.
 //-----------------------------------------------------------------------------------
 
 #ifndef BOUNDARY_CYCLE

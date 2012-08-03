@@ -30,6 +30,10 @@ node* planarity_test::new_c_node(int i)
 	return u;
 }
 
+//-----------------------------------------------------------------------------------
+// Preprocessing...
+//-----------------------------------------------------------------------------------
+
 void planarity_test::determine_biconnected_component() 
 {
 	vector<node*> post_order_list;
@@ -105,7 +109,11 @@ void planarity_test::sortAdjList(vector<node*> &post_order_list)
 		post_order_list[i]->setAdjList(vecList[i]);
 	}
 }
-	
+
+//-----------------------------------------------------------------------------------
+// Postprocessing...
+//-----------------------------------------------------------------------------------
+
 //全部都弄好後, 開始把c_node全部flip到正確的方向
 void planarity_test::c_node_flip() 
 {
@@ -128,7 +136,11 @@ void planarity_test::recover_embedding()
 		_dfs_list[i]->add_to_final_embedding(_embed_list[_dfs_list[i]->index()]);
 	}
 }
-	
+
+//-----------------------------------------------------------------------------------
+// Back edge traversal
+//-----------------------------------------------------------------------------------
+
 //這個biconnected component只是一個edge
 void planarity_test::trivial_embed(node* node_i, node* node_t) 
 {
@@ -318,6 +330,12 @@ boundary_cycle* planarity_test::parallel_search(node* node_s, int index)
 		}
 	}
 }
+
+//-----------------------------------------------------------------------------------
+// construct c-node
+//-----------------------------------------------------------------------------------
+
+
 bool planarity_test::build_c_node(node* node_t, node* node_i) 
 {
 	//init, test validity.
@@ -411,6 +429,10 @@ node* planarity_test::check_RBC_validity(node* node_t, int index)
 	}
 	return node_m;
 }
+
+//-----------------------------------------------------------------------------------
+// debug...
+//-----------------------------------------------------------------------------------
 
 void planarity_test::brute_force_check_emb() 
 {

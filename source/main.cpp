@@ -18,10 +18,18 @@ using namespace std;
 bool planarity_testing(simple_graph*, simple_graph*, simple_graph*);
 void find_mps(simple_graph*, simple_graph*);
 
+//-----------------------------------------------------------------------------------
+// Graphs for input, output, obsturctoin, generation.
+//-----------------------------------------------------------------------------------
+
 simple_graph __in_g;
 simple_graph __out_g;
 simple_graph __obs_g;
 simple_graph __gen_g;
+
+//-----------------------------------------------------------------------------------
+// Graph generation.
+//-----------------------------------------------------------------------------------
 
 //n nodes, with the probability of existence of each edge being p.
 void random_graph_generator(int n, double p, simple_graph* g) {
@@ -43,6 +51,8 @@ void complete_graph_generator(int n, simple_graph* g) {
 	}
 }
 
+/*
+//for debug
 void planarityTest(ifstream* in, ofstream* out) {
 	__in_g.read_adj_list(in);
 	planarity_test* p = new planarity_test();
@@ -50,12 +60,14 @@ void planarityTest(ifstream* in, ofstream* out) {
 	else __obs_g.output_adj_list(out);
 	delete p;
 }
+*/
 
 //-----------------------------------------------------------------------------------
 // Main function.
 //-----------------------------------------------------------------------------------
 
 /*
+//for debug
 int main() {
 		ifstream in;
 	    in.open("Data/in.txt");

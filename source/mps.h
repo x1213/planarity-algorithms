@@ -1,5 +1,6 @@
 //-----------------------------------------------------------------------------------
 // Implementation of a planarity testing algorithm via PC-tree.
+// The header of mps.cpp, mps_io.cpp.
 //-----------------------------------------------------------------------------------
 
 #ifndef _MPS_H
@@ -20,6 +21,7 @@ class simple_graph;
 class mps_node;
 class maximal_planar_subgraph_finder;
 
+//finding mps
 class maximal_planar_subgraph_finder
 {
 public:

@@ -1,5 +1,6 @@
 //-----------------------------------------------------------------------------------
 // Implementation of a planarity testing algorithm via PC-tree.
+// The header of node.cpp.
 //-----------------------------------------------------------------------------------
 
 #ifndef NODE
@@ -18,7 +19,7 @@ class list_node;
 class boundary_cycle;
 
 
-
+//node in planarity testing.
 class node
 {
 public:
@@ -38,8 +39,8 @@ public:
 	int maxBackAnscenstorID();
 	bool is_articulation_point();
 	void reset_dfs_info();
-
 	void split_arculation_point(vector<node*> &node_list, node* modified = 0);
+
 	void add_adj(node* u);
 	void set_parent(node* u);
 	void setAdjList(vector<node*> &adjList);
@@ -93,19 +94,19 @@ private:
 	node_type _type;
 	int _Mark;
 	int _index;
-	int _visited; //_visited = i 表示上次被traverse是在i-iteration
+	int _visited; //_visited = i indicate the last time being traverses is in i-iteration
 	int _post_order_index;
 	int _maxBackAnscenstorID;
 	bool _is_done;
 	node* _parent;
 	vector<node*> _adjList;
-	vector<node*> _descendantList;
-	vector<node*> _curr_descendantList;
-	vector<node*> _remain_descendantList; //剩下的descendant-list
+	vector<node*> _descendantList; // Total descendant-list
+	vector<node*> _curr_descendantList; //The descendant-list in the current iteration. 
+	vector<node*> _remain_descendantList; //The remaining descendant-list.
 	list_node* _list_node; //對應在c-node中的list-node
 	boundary_cycle* _RBC; //如果此node是c-node的話
 	embedding* _emb;
-	pair<int, bool> _i_tree_test; //為了加速is_i_tree()用的, 儲存記錄.
+	pair<int, bool> _i_tree_test; //For speed up is_i_tree(), saving the record.
 };
 
 

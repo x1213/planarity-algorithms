@@ -1,5 +1,6 @@
 //-----------------------------------------------------------------------------------
 // Implementation of a planarity testing algorithm via PC-tree.
+// The header of list_node.cpp.
 //-----------------------------------------------------------------------------------
 
 #ifndef LIST_NODE

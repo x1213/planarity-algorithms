@@ -14,6 +14,10 @@
 
 using namespace::std;
 
+//-----------------------------------------------------------------------------------
+// Pre-processing...
+//-----------------------------------------------------------------------------------
+
 void 
 planarity_test::seg_2_extract_obstruction(node* current, node* node_m, int index) 
 {
@@ -58,6 +62,10 @@ planarity_test::three_terminal_extract_obstruction(node* m, int index)
 	}
 	p_K_3_3_search_2(m, u_0, u_1, u_2, index);
 }
+
+//-----------------------------------------------------------------------------------
+// The 5 cases for minor search.
+//-----------------------------------------------------------------------------------
 
 void 
 planarity_test::p_K_3_3_search_1(node* m, node* u_0, node* u_1, int index) 
@@ -174,6 +182,10 @@ planarity_test::c_K_5_search(node* m, node* u_0, node* u_1, int index)
 	node* p = find_LCA(find_LCA(p_0, p_1), p_m);
 	find_LCA(r, p);
 }
+
+//-----------------------------------------------------------------------------------
+// Aux. func. for minor search.
+//-----------------------------------------------------------------------------------
 
 //§äu-nodeª½ÄÝªºc-node
 boundary_cycle* 
@@ -396,6 +408,10 @@ planarity_test::add_to_obstruction(int i, int j)
 	if (i <= j) _obstruction.push_back(pair<int, int>(i, j));
 	else _obstruction.push_back(pair<int, int>(j, i));
 }
+
+//-----------------------------------------------------------------------------------
+// post-processing
+//-----------------------------------------------------------------------------------
 
 void 
 planarity_test::radix_sort_obstruction_list() 

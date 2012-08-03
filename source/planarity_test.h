@@ -1,5 +1,6 @@
 //-----------------------------------------------------------------------------------
 // Implementation of a planarity testing algorithm via PC-tree.
+// The header of planarity_test.cpp, planarity_io.cpp, embedding.cpp, obstruction.cpp.
 //-----------------------------------------------------------------------------------
 
 #ifndef PLANARITY_TEST
@@ -24,6 +25,7 @@ class node;
 class list_node;
 class simple_graph;
 
+//planarity testing
 class planarity_test
 {
 public:
@@ -65,6 +67,7 @@ public:
 	void output_partial_embedding();
 
 	//extend terminal path
+	//the '1' means that function is used in seg.1
 	void downward_embed(node* u, vector<node*> &list, node* node_i, boundary_cycle* parent, int embed_direction, int come_from);
 	void downward_embed(node* u, vector<node*> &list, node* node_i, boundary_cycle* parent, int embed_direction);
 	void embed_p_node(node* u, vector<node*> &list, node* node_i, boundary_cycle* parent, int embed_direction, int add_node_direction);

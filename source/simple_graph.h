@@ -1,5 +1,6 @@
 //-----------------------------------------------------------------------------------
 // Implementation of a planarity testing algorithm via PC-tree.
+// The header of simple_graph.cpp.
 //-----------------------------------------------------------------------------------
 
 #ifndef _SIMP_GRAPH_H
@@ -16,6 +17,7 @@
 
 using namespace::std;
 
+//basic data structure for graph that deal with every algorithm in the program.
 class simple_graph
 {
 public:

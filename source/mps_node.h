@@ -1,5 +1,6 @@
 //-----------------------------------------------------------------------------------
 // Implementation of a planarity testing algorithm via PC-tree.
+// The header of mps_node.cpp.
 //-----------------------------------------------------------------------------------
 
 #ifndef _MPS_NODE_H
@@ -15,7 +16,7 @@
 
 using namespace::std;
 
-
+// node in mps algorithm
 class mps_node
 {
 public:
